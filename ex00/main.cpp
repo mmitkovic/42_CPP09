@@ -1,85 +1,112 @@
-//#include <vector>
 #include <cctype>
+#include <exception>
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <map>
+#include <algorithm>
 
-/* 
-std::vector<std::vector<std::string> > readCSV(const std::string& filename)
+std::map<std::string, double> readCSV(const char * filename)
 {
-	std::vector<std::vector<std::string>> data;
-	std::ifstream file(filename);
-
+	std::ifstream file(filename, std::ios::in);
 	if (!file.is_open())
-	{
-		std::cerr << "Failed to open file: " << filename << std::endl;
-		return data;
-	}
-
-	std::string line;
-	while (std::getline(file, line))
-	{
-		std::vector<std::string> row;
-		std::stringstream ss(line);
-		std::string cell;
-
-		while (std::getline(ss, cell, ','))
-		{
-			row.push_back(cell);
-		}
-		data.push_back(row);
-	}
-	file.close();
-	return data;
-}
-*/
-
-std::map<std::string, double> readCSV(const std::string& filename)
-{
-	std::ifstream file(filename);
-	if (!file.is_open())
-	{
-		std::cerr << "Error: could not open file." << std::endl;
-		//return data;
-	}
+		throw std::exception();
 	std::map<std::string, double> data;
 	std::string lineStr;
 	while (std::getline(file, lineStr))
 	{
 		// split string
-		int index = lineStr.find(",");
-		std::string dateK = lineStr.substr(0, index);
-		double rateV;
-		try {
-			rateV = std::stod(lineStr.substr(index+1, lineStr.size()-1));
-		} catch (...) {
-			continue;
+		/*
+			* Consume first line?
+		*/
+		size_t index = lineStr.find(",");
+		if (index != std::string::npos)
+		{
+			std::string dateK = lineStr.substr(0, index);
+			double rateV;
+			// convert to double
+			std::stringstream ss(lineStr.substr(index+1, lineStr.size()-1));
+			if (!(ss >> rateV))
+			{
+				std::cout << "Error: " << lineStr << std::endl;
+				continue;
+			}
+			data[dateK] = rateV;
 		}
-		data[dateK] = rateV;
+		else {
+			std::cout << "Invalid data" << std::endl;
+		}
 	}
-
+	file.close();
 	return data;
 }
 
-int main() {
-	/*
-	std::vector<std::vector<std::string>> data = readCSV("data.csv");
-	for (int i = 0; i < 10; ++i) {
-		std::cout << data[i].front() << std::endl;
-		std::cout << data[i].back() << std::endl;
+int main(int ac, char ** av)
+{
+	if (ac != 2)
+	{
+		std::cerr << "Error: could not open file." << std::endl;
+		return 1;
 	}
-	*/
-
-	std::map<std::string, double> data = readCSV("data.csv");
+	const char * inputFileName = av[1];
+	std::map<std::string, double> data;
+	try {
+		data = readCSV("data.csv");
+	} catch ( const std::ifstream::failure& e) {
+		std::cerr << "Error: could not open file. " <<  std::endl;
+	}
+	/*
 	// reading map
 	std::map<std::string, double>::const_iterator it = data.begin();
 	std::map<std::string, double>::const_iterator ite = data.end();
 	while (it != ite) 
 	{
-		std::cout << "K: " << it->first << " | " << "V: " << it->second * 2 << std::endl;;
+		std::cout << "K: " << it->first << " | " << "V: " << it->second << std::endl;;
 		++it;
+	}
+	*/
+
+	// input.txt read
+	std::ifstream input(inputFileName);
+	if (!input.is_open())
+		throw std::exception();
+
+	std::string lineInputFile;
+	while (std::getline(input, lineInputFile))
+	{
+		lineInputFile.erase(std::remove(lineInputFile.begin(), lineInputFile.end(), ' '), lineInputFile.end());
+		size_t index = lineInputFile.find("|");
+		if (index != std::string::npos)
+		{
+			std::string inputDate = lineInputFile.substr(0, index);
+			double inputRate;
+			std::stringstream ss(lineInputFile.substr(index+1, lineInputFile.size()-1));
+			if (!(ss >> inputRate))
+			{
+				std::cout << "Rate Error: " << lineInputFile << std::endl;
+				continue;
+			}
+			std::map<std::string, double>::iterator it = data.lower_bound(inputDate);
+			if (it != data.end() && it->first != inputDate) {
+				--it;
+				if (it != data.end()) {
+					double res = it->second * inputRate;
+					std::cout << inputDate << " => " << inputRate << " = " << res << std::endl;
+				}
+			}
+			else if (it != data.end() && it->first == inputDate) {
+				double res = it->second * inputRate;
+				std::cout << inputDate << " => " << inputRate << " = " << res << std::endl;
+			}
+			else
+				std::cout << "Not present" << std::endl;
+		}
+		else
+		{
+			std::cerr << "Error: bad input => " << lineInputFile << std::endl;
+		}
+		
 	}
 
 	return 0;
