@@ -8,13 +8,16 @@
 class BitcoinExchange
 {
 private:
+	typedef struct Dates {
+	int year, month, day;
+	} dateStruct;
 	std::map<std::string, double> _database;
 	void _loadDatabase(const char * dbPath);
 	bool isValidDate(const std::string& date);
 	bool isValidValue(const double v);
-	bool checkYear(const std::string& y);
-	bool checkMonth(const std::string& m);
-	bool checkDay(const std::string& d);
+	bool checkYear(const std::string& y, dateStruct& dates);
+	bool checkMonth(const std::string& m, dateStruct& dates);
+	bool checkDay(const std::string& d, dateStruct& dates);
 public:
 	BitcoinExchange();
 	BitcoinExchange(const char * dbPath);
@@ -38,12 +41,6 @@ public:
 	public:
 		virtual const char * what() const throw() { return "Error: not a positive number."; }
 	};
-
-	typedef struct Dates {
-	int year, month, day;
-	} dateStruct;
-	
-
 	void calculate(const char * inputPath);
 };
 

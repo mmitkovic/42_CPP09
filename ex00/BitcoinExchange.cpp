@@ -32,14 +32,12 @@ BitcoinExchange::~BitcoinExchange() {
 }
 
 // ---
-BitcoinExchange::dateStruct dates = { 0, 0, 0 };
-
 bool BitcoinExchange::isValidValue(const double v) {
 	if (v < 0 || v > 1000)
 		return false;
 	return true;
 }
-bool BitcoinExchange::checkYear(const std::string& y)
+bool BitcoinExchange::checkYear(const std::string& y, dateStruct& dates)
 {
 	for (size_t i = 0; i < y.size(); ++i) {
 		if (!std::isdigit(y[i]))
@@ -52,7 +50,7 @@ bool BitcoinExchange::checkYear(const std::string& y)
 		return false;
 	return true;
 }
-bool BitcoinExchange::checkMonth(const std::string& m)
+bool BitcoinExchange::checkMonth(const std::string& m, dateStruct& dates)
 {
 	for (size_t i = 0; i < m.size(); ++i) {
 		if (!std::isdigit(m[i]))
@@ -65,7 +63,7 @@ bool BitcoinExchange::checkMonth(const std::string& m)
 		return false;
 	return true;
 }
-bool BitcoinExchange::checkDay(const std::string& d)
+bool BitcoinExchange::checkDay(const std::string& d, dateStruct& dates)
 {
 	for (size_t i = 0; i < d.size(); ++i) {
 		if (!std::isdigit(d[i]))
@@ -105,19 +103,20 @@ bool BitcoinExchange::isValidDate(const std::string& date)
 {
 	size_t iY = date.find("-");
 	if (iY != std::string::npos) {
+		BitcoinExchange::dateStruct dates = { 0, 0, 0 };
 		std::string yearStr = date.substr(0, iY);
-		if (!checkYear(yearStr))
+		if (!checkYear(yearStr, dates))
 			return false;
 		size_t iM = date.find_last_of("-");
 		if (iM != std::string::npos) {
 			std::string monthStr = date.substr(iY+1, iM-(iY+1));
-			if (!checkMonth(monthStr))
+			if (!checkMonth(monthStr, dates))
 				return false;
 		}
 		else
 			return false;
 		std::string dayStr = date.substr(iM+1, date.size()-1);
-		if (!checkDay(dayStr))
+		if (!checkDay(dayStr, dates))
 			return false;
 		return true;
 	}
