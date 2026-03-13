@@ -13,10 +13,10 @@ int main(int ac, char ** av)
 	}
 	const char * inputFileName = av[1];
 
-	BitcoinExchange btc("data.csv");
 	try {
+		BitcoinExchange btc("data.csv");
 		btc.calculate(inputFileName);
-	} catch (std::exception& e) {
+	} catch (const std::exception& e) {
 		std::cout << e.what() << std::endl;
 	}
 	return 0;

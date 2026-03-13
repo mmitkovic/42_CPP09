@@ -2,7 +2,6 @@
 #include <algorithm>
 #include <cstddef>
 #include <exception>
-#include <limits.h>
 #include <iostream>
 #include <sstream>
 #include <fstream>
@@ -31,9 +30,9 @@ BitcoinExchange& BitcoinExchange::operator=(const BitcoinExchange& rhs) {
 BitcoinExchange::~BitcoinExchange() {
 	std::cout << "~btc" << std::endl;
 }
-// ---
 
-dateStruct dates = { 0, 0, 0 };
+// ---
+BitcoinExchange::dateStruct dates = { 0, 0, 0 };
 
 bool BitcoinExchange::isValidValue(const double v) {
 	if (v < 0 || v > 1000)
@@ -131,7 +130,7 @@ void BitcoinExchange::_loadDatabase(const char * filename)
 	// Load CSV
 	std::ifstream file(filename, std::ios::in);
 	if (!file.is_open())
-		throw std::exception();
+		throw FileNotFound();
 	std::string header;
 	if (std::getline(file, header)) {
 		(void)header;
@@ -164,7 +163,7 @@ void BitcoinExchange::calculate(const char * inputPath) {
 	
 	std::ifstream input(inputPath);
 	if (!input.is_open())
-		throw std::exception();
+		throw FileNotFound();
 	std::string header;
 	if (std::getline(input, header)) {
 		(void)header;
@@ -174,37 +173,51 @@ void BitcoinExchange::calculate(const char * inputPath) {
 	{
 		lineInputFile.erase(std::remove(lineInputFile.begin(), lineInputFile.end(), ' '), lineInputFile.end());
 		size_t index = lineInputFile.find("|");
-		if (index != std::string::npos) {
-			std::string inputDate = lineInputFile.substr(0, index);
-			if (!isValidDate(inputDate)) {
-				std::cout << "Error: bad input => " << inputDate <<std::endl;
-				continue;
-			}
-			double inputRate;
-			std::stringstream ss(lineInputFile.substr(index+1, lineInputFile.size()-1));
-			if (!(ss >> inputRate)) {
-				std::cerr << "Error: bad input => " << lineInputFile.substr(index+1, lineInputFile.size()-1) << std::endl;
-				continue;
-			}
-			if (isValidValue(inputRate)) {
-				std::map<std::string, double>::iterator it = _database.lower_bound(inputDate);
-				if (it->first != inputDate)
-					--it;
-				if (it != _database.end()) {
-					double res = it->second * inputRate;
-					std::cout << inputDate << " => " << inputRate << " = " << res << std::endl;
+		try {
+			if (index != std::string::npos) {
+				std::string inputDate = lineInputFile.substr(0, index);
+				try {
+					if (!isValidDate(inputDate))
+						throw BadInput();
+				} catch (const std::exception& e) {
+					std::cout << e.what() << inputDate << std::endl;
+					continue;
+				}
+				double inputRate;
+				std::stringstream ss(lineInputFile.substr(index+1, lineInputFile.size()-1));
+				try {
+					if (!(ss >> inputRate)) {
+						throw BadInput();
+					}
+				} catch (const std::exception& e) {
+					std::cerr << e.what() << lineInputFile.substr(index+1, lineInputFile.size()-1) << std::endl;
+					continue;
+				}
+				if (isValidValue(inputRate)) {
+					std::map<std::string, double>::iterator it = _database.lower_bound(inputDate);
+					if (it->first != inputDate)
+						--it;
+					if (it != _database.end()) {
+						double res = it->second * inputRate;
+						std::cout << inputDate << " => " << inputRate << " = " << res << std::endl;
+					}
+				} else {
+					try {
+						if (inputRate < 0)
+							throw NegativeNumber();
+							// std::cout <<  << std::endl;
+						else if (inputRate > 1000)
+							throw LargeNumber();
+						// std::cout <<  << std::endl;
+					} catch (const std::exception& e) {
+						std::cout << e.what() << std::endl;
+					}
 				}
 			}
-			else {
-				if (inputRate < 0)
-					std::cout << "Error: not a positive number." << std::endl;
-				else if (inputRate > INT_MAX)
-					std::cout << "Error: too large a number." << std::endl;
-			}
+			else
+				throw BadInput();
+		} catch (const std::exception& e) {
+			std::cerr << e.what() << lineInputFile << std::endl;
 		}
-		else {
-			std::cerr << "Error: bad input => " << lineInputFile << std::endl;
-		}
-		
 	}
 }
