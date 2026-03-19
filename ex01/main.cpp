@@ -11,10 +11,10 @@ int main(int ac, char **av)
 		std::cerr << "Error: argument count." << std::endl;
 		return 1;
 	}
-	std::string input = av[1];
+	//std::string input = av[1];
 	RPN rpn;
 	try {
-		rpn.calculate(input);
+		rpn.calculate(av[1]);
 	} catch (const std::exception& e) {
 		std::cerr << e.what() << std::endl;
 	}
