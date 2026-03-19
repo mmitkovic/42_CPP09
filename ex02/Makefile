@@ -5,22 +5,22 @@
 #                                                     +:+ +:+         +:+      #
 #    By: mmitkovi <mmitkovi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2026/03/19 19:15:01 by mmitkovi          #+#    #+#              #
-#    Updated: 2026/03/19 19:18:19 by mmitkovi         ###   ########.fr        #
+#    Created: 2026/03/19 19:18:10 by mmitkovi          #+#    #+#              #
+#    Updated: 2026/03/19 19:22:54 by mmitkovi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME	:= RPN
+NAME	:= PmergeMe
 
 CXX     := c++
 CXXFLAGS:= -Wall -Wextra -Werror -std=c++98
 
 SRCS    := main.cpp \
-	   RPN.cpp
+			PmergeMe.cpp
 
 OBJS    := $(SRCS:.cpp=.o)
 
-DEPS    := RPN.hpp \
+DEPS    := PmergeMe.hpp \
 
 all: $(NAME)
 
