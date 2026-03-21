@@ -2,6 +2,8 @@
 #define PMERGEME_HPP
 
 #include <vector>
+#include <ctime>
+
 typedef std::pair<int, int> pair;
 template <typename Container, typename PairContainer>
 class PmergeMe
@@ -29,14 +31,14 @@ public:
 	PmergeMe& operator=(const PmergeMe& rhs);
 	~PmergeMe();
 	// void fordJohnson(std::vector<int> input);
-	void fordJohnson(Container input);
+	Container fordJohnson(Container input);
 };
 
 // OCF
 template <typename Container, typename PairContainer>
 PmergeMe<Container, PairContainer>::PmergeMe() : _lastElem(-1)
 {
-	std::cout << "[c]PmergeMe" << std::endl;
+	// std::cout << "[c]PmergeMe" << std::endl;
 }
 template <typename Container, typename PairContainer>
 PmergeMe<Container, PairContainer>::~PmergeMe() 
@@ -46,21 +48,14 @@ PmergeMe<Container, PairContainer>::~PmergeMe()
 
 // ---
 template <typename Container, typename PairContainer>
-void PmergeMe<Container, PairContainer>::fordJohnson(Container input)
+Container PmergeMe<Container, PairContainer>::fordJohnson(Container input)
 {
 	PairContainer vPair = pairUp(input);
 	sortPairs(vPair);
 	Container mainChain = createMainChain(vPair);
 	Container jacob = calcJacobSeq();
 	Container finalChain = insert(mainChain, vPair, jacob);
-
-	//Final chain print
-	std::cout << "Final Chain: ";
-	for (size_t i = 0; i < finalChain.size(); ++i)
-	{
-		std::cout << finalChain[i] << " ";
-	}
-	std::cout << std::endl;
+	return finalChain;
 }
 
 template <typename Container, typename PairContainer>

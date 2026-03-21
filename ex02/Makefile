@@ -6,14 +6,14 @@
 #    By: mmitkovi <mmitkovi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/19 19:18:10 by mmitkovi          #+#    #+#              #
-#    Updated: 2026/03/21 11:02:56 by mmitkovi         ###   ########.fr        #
+#    Updated: 2026/03/21 16:55:38 by mmitkovi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	:= PmergeMe
 
 CXX     := c++
-CXXFLAGS:= -Wall -Wextra -Werror
+CXXFLAGS:= -Wall -Wextra -Werror -std=c++98
 
 SRCS    := main.cpp \
 
