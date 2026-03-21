@@ -6,7 +6,7 @@
 /*   By: mmitkovi <mmitkovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 19:21:25 by mmitkovi          #+#    #+#             */
-/*   Updated: 2026/03/19 19:21:26 by mmitkovi         ###   ########.fr       */
+/*   Updated: 2026/03/21 11:01:43 by mmitkovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <vector>
 
 // OCF
+/*
 PmergeMe::PmergeMe() : _lastElem(-1)
 {
 	std::cout << "[c]PmergeMe" << std::endl;
@@ -25,8 +26,9 @@ PmergeMe::PmergeMe() : _lastElem(-1)
 PmergeMe::~PmergeMe() {
 	std::cout << "~PmergeMe" << std::endl;
 }
+*/
 
-// ---
+/*
 void PmergeMe::fordJohnson(std::vector<int> input)
 {
 	std::vector<pair> vPair = pairUp(input);
@@ -43,6 +45,8 @@ void PmergeMe::fordJohnson(std::vector<int> input)
 	}
 	std::cout << std::endl;
 }
+*/
+/*
 std::vector<pair> PmergeMe::pairUp(std::vector<int> vArr)
 {
 	std::vector<pair> vPair;
@@ -67,7 +71,8 @@ std::vector<pair> PmergeMe::pairUp(std::vector<int> vArr)
 			std::swap(vPair[i].first, vPair[i].second);
 	return vPair;
 }
-
+*/
+/*
 void PmergeMe::sortPairs(std::vector<pair>& vPair)
 {
 	int n = vPair.size();
@@ -85,7 +90,8 @@ void PmergeMe::sortPairs(std::vector<pair>& vPair)
 	sortPairs(right);
 	merge(left, right, vPair);
 }
-	
+*/
+/*	
 void PmergeMe::merge(std::vector<pair> left, std::vector<pair> right, std::vector<pair>& vPair)
 {
 	int nL = left.size();
@@ -118,7 +124,8 @@ void PmergeMe::merge(std::vector<pair> left, std::vector<pair> right, std::vecto
 		k++;
 	}
 }
-
+*/
+/*
 std::vector<int> PmergeMe::createMainChain(std::vector<pair>& sortedVPair)
 {
 	std::vector<int> mainChain;
@@ -135,7 +142,8 @@ std::vector<int> PmergeMe::createMainChain(std::vector<pair>& sortedVPair)
 
 	return mainChain;
 }
-
+*/
+/*
 std::vector<int> PmergeMe::calcJacobSeq()
 {
 	std::vector<int> jacob;
@@ -149,10 +157,10 @@ std::vector<int> PmergeMe::calcJacobSeq()
 	}
 	return jacob;
 }
-
+*/
+/*
 std::vector<int> PmergeMe::insert(std::vector<int>& mainChain, std::vector<pair>& vPair, std::vector<int> jacob)
 {
-	// v -> sorted vector<pair>
 	for (size_t i = 3; i < jacob.size(); ++i)
 	{
 		size_t current_jacob = jacob[i];
@@ -160,21 +168,16 @@ std::vector<int> PmergeMe::insert(std::vector<int>& mainChain, std::vector<pair>
 
 		if (current_jacob > vPair.size())
 			current_jacob = vPair.size();
-		// Inner Loop: Count BACKWARDS through the group
 		for (size_t k = current_jacob; k > previouse_jacob; --k)
 		{
-			// Because 'k' represents the mathematical number (e.g., 3 for b_3),
-			// its actual index in vector 'v' is k - 1.
 			int pedantValue = vPair[k-1].second;
 			int parentValue = vPair[k-1].first;
 
-			// --- BINARY & INSERTION GOES HERE ---
 			std::vector<int>::iterator limit = std::lower_bound(mainChain.begin(), mainChain.end(), parentValue);
 			std::vector<int>::iterator insertPoint = std::lower_bound(mainChain.begin(), limit, pedantValue);
 			mainChain.insert(insertPoint, pedantValue);
 		}
 	}
-	// Last Elem insert
 	if (this->_lastElem != -1)
 	{
 		std::vector<int>::iterator limitLastElem = std::lower_bound(mainChain.begin(), mainChain.end(), this->_lastElem);
@@ -182,3 +185,4 @@ std::vector<int> PmergeMe::insert(std::vector<int>& mainChain, std::vector<pair>
 	}
 	return mainChain;
 }
+*/

@@ -6,7 +6,7 @@
 /*   By: mmitkovi <mmitkovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 19:16:05 by mmitkovi          #+#    #+#             */
-/*   Updated: 2026/03/19 20:26:23 by mmitkovi         ###   ########.fr       */
+/*   Updated: 2026/03/21 11:06:27 by mmitkovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,10 @@ int main(/*int ac, char **av*/)
 	if (ac < 2)
 		std::cerr << "Invalid input" << std::endl;
 	*/
-	std::vector<int> input = {2, 7, 13, 1, 6, 4, 5, 9, 11, 8, 10, 3, 12};
+	std::vector<int> input = {2, 7, 13, 1, 888888, 4, 5, 9, 11, 8, 10, 3, 12};
 
-	PmergeMe v;
+	// template <typename Container, typename PairContainer>
+	PmergeMe<std::vector<int>, std::vector<pair>> v;
 	// try
 	v.fordJohnson(input);
 	// catch

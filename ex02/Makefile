@@ -6,7 +6,7 @@
 #    By: mmitkovi <mmitkovi@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/03/19 19:18:10 by mmitkovi          #+#    #+#              #
-#    Updated: 2026/03/19 19:22:54 by mmitkovi         ###   ########.fr        #
+#    Updated: 2026/03/21 11:02:56 by mmitkovi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,6 @@ CXX     := c++
 CXXFLAGS:= -Wall -Wextra -Werror
 
 SRCS    := main.cpp \
-			PmergeMe.cpp
 
 OBJS    := $(SRCS:.cpp=.o)
 
