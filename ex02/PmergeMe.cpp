@@ -18,7 +18,8 @@
 #include <vector>
 
 // OCF
-PmergeMe::PmergeMe() {
+PmergeMe::PmergeMe() : _lastElem(-1)
+{
 	std::cout << "[c]PmergeMe" << std::endl;
 }
 PmergeMe::~PmergeMe() {
@@ -41,8 +42,6 @@ void PmergeMe::fordJohnson(std::vector<int> input)
 		std::cout << finalChain[i] << " ";
 	}
 	std::cout << std::endl;
-
-	
 }
 std::vector<pair> PmergeMe::pairUp(std::vector<int> vArr)
 {
@@ -59,8 +58,7 @@ std::vector<pair> PmergeMe::pairUp(std::vector<int> vArr)
 		if (i % 2 == 0)
 		{
 			int a = vArr[i];
-			i++;
-			int b = vArr[i];
+			int b = vArr[i+1];
 			vPair.push_back(std::make_pair(a, b));
 		}
 	}
