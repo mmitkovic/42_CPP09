@@ -7,7 +7,7 @@ template <typename Container, typename PairContainer>
 class PmergeMe
 {
 private:
-	std::vector<int> _v;
+	Container _v;
 	int _lastElem;
 	int _totalPedants;
 
@@ -48,11 +48,11 @@ PmergeMe<Container, PairContainer>::~PmergeMe()
 template <typename Container, typename PairContainer>
 void PmergeMe<Container, PairContainer>::fordJohnson(Container input)
 {
-	std::vector<pair> vPair = pairUp(input);
+	PairContainer vPair = pairUp(input);
 	sortPairs(vPair);
-	std::vector<int> mainChain = createMainChain(vPair);
-	std::vector<int> jacob = calcJacobSeq();
-	std::vector<int> finalChain = insert(mainChain, vPair, jacob);
+	Container mainChain = createMainChain(vPair);
+	Container jacob = calcJacobSeq();
+	Container finalChain = insert(mainChain, vPair, jacob);
 
 	//Final chain print
 	std::cout << "Final Chain: ";
@@ -94,8 +94,8 @@ void PmergeMe<Container, PairContainer>::sortPairs(PairContainer& vPair)
 	if (n < 2)
 		return ;
 	int mid = n / 2;
-	std::vector<pair> left(mid);
-	std::vector<pair> right(n-mid);
+	PairContainer left(mid);
+	PairContainer right(n-mid);
 
 	for (int i = 0; i < mid; ++i)
 		left[i] = vPair[i];
@@ -143,7 +143,7 @@ void PmergeMe<Container, PairContainer>::merge(PairContainer left, PairContainer
 template <typename Container, typename PairContainer>
 Container PmergeMe<Container, PairContainer>::createMainChain(PairContainer& sortedVPair)
 {
-	std::vector<int> mainChain;
+	Container mainChain;
 	this->_totalPedants = 0;
 	for (size_t i = 0; i < sortedVPair.size(); ++i)
 	{
@@ -161,7 +161,7 @@ Container PmergeMe<Container, PairContainer>::createMainChain(PairContainer& sor
 template <typename Container, typename PairContainer>
 Container PmergeMe<Container, PairContainer>::calcJacobSeq()
 {
-	std::vector<int> jacob;
+	Container jacob;
 	jacob.push_back(0);
 	jacob.push_back(1);
 	int i = 1;
@@ -188,14 +188,14 @@ Container PmergeMe<Container, PairContainer>::insert(Container& mainChain, PairC
 			int pedantValue = vPair[k-1].second;
 			int parentValue = vPair[k-1].first;
 
-			std::vector<int>::iterator limit = std::lower_bound(mainChain.begin(), mainChain.end(), parentValue);
-			std::vector<int>::iterator insertPoint = std::lower_bound(mainChain.begin(), limit, pedantValue);
+			typename Container::iterator limit = std::lower_bound(mainChain.begin(), mainChain.end(), parentValue);
+			typename Container::iterator insertPoint = std::lower_bound(mainChain.begin(), limit, pedantValue);
 			mainChain.insert(insertPoint, pedantValue);
 		}
 	}
 	if (this->_lastElem != -1)
 	{
-		std::vector<int>::iterator limitLastElem = std::lower_bound(mainChain.begin(), mainChain.end(), this->_lastElem);
+		typename Container::iterator limitLastElem = std::lower_bound(mainChain.begin(), mainChain.end(), this->_lastElem);
 		mainChain.insert(limitLastElem, this->_lastElem);
 	}
 	return mainChain;
