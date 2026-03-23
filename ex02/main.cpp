@@ -17,8 +17,15 @@
 #include <ctime>
 #include <iomanip>
 #include <cstdlib>
+#include <sys/time.h>
+#include <time.h>
 #include "PmergeMe.hpp"
 
+void sub_timespec(struct timespec& s, struct timespec& e, double& d)
+{
+	d  = (e.tv_sec - s.tv_sec) * 1e9;
+	d = d + (e.tv_nsec - s.tv_nsec);
+}
 
 int main(int ac, char **av)
 {
@@ -46,8 +53,6 @@ int main(int ac, char **av)
 		inputD.push_back(num);
 	}
 	std::cout << std::endl;
-
-	// TODO: time clac for each container
 	
 	std::cout << "Before: ";
 	for (size_t i = 0; i < inputD.size(); ++i)
@@ -59,13 +64,20 @@ int main(int ac, char **av)
 	PmergeMe<std::deque<int>, std::deque<pair> > d;
 	
 	// Time
-	const std::clock_t v_start = std::clock();
+	struct timespec startV, endV;
+	if (clock_gettime(CLOCK_REALTIME, &startV) == -1)
+	{
+		std::cerr << "Clock_gettime" << std::endl;
+		return 1;
+	}
 	// ALGO START
 	std::vector<int> outputV = v.fordJohnson(inputV);
 	// --- END
-	const std::clock_t v_end = std::clock();
-	std::cout << std::fixed << std::setprecision(5) << "With std::vector<int>: "
-				<< 1000000.0 * (v_end - v_start) / CLOCKS_PER_SEC << " μs" << std::endl;
+	
+	clock_gettime(CLOCK_REALTIME, &endV);
+	double nanoV;
+	sub_timespec(startV, endV, nanoV);
+
 
 	// Print the output
 	std::cout << "After std::vector<int>: ";
@@ -73,19 +85,33 @@ int main(int ac, char **av)
 		std::cout << outputV[i] << " ";
 	std::cout << std::endl;
 
-	const std::clock_t d_start = std::clock();
-	// Algo Start
+	//struct timeval startD,endD;
+	//gettimeofday(&startD, NULL);
+
+	struct timespec startD, endD;
+	if (clock_gettime(CLOCK_REALTIME, &startD) == -1)
+	{
+		std::cerr << "Clock_gettime" << std::endl;
+		return 1;
+	}
+	// ALGO Deque Start
 	std::deque<int> outputD = d.fordJohnson(inputD);
-	const std::clock_t d_end = std::clock();
-	std::cout << std::fixed << std::setprecision(5) << "With std::deque<int>: "
-				<< 1000000.0 * (d_end - d_start) / CLOCKS_PER_SEC << " μs" << std::endl;
-	
+
+	clock_gettime(CLOCK_REALTIME, &endD);
+	double nanoD;
+	sub_timespec(startD, endD, nanoD);
+
 	// Print the output
 	std::cout << "After std::deque<int>: ";
 	for (size_t i = 0; i < outputD.size(); ++i)
 		std::cout << outputD[i] << " ";
 	std::cout << std::endl;
-	// catch
+	
+	std::cout << std::fixed << std::setprecision(5) <<"Time to process a range of __ elements with std::vector<int> : " 
+			<< nanoV/1000 << " μs" << std::endl;
+	std::cout << "Time to process a range of __ elements with std::deque<int> : " 
+			<< nanoD/1000 << std::setprecision(5) << " μs" << std::endl;
+
 
 	return 0;
 }
