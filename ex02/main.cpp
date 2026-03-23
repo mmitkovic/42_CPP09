@@ -6,25 +6,39 @@
 /*   By: mmitkovi <mmitkovi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/19 19:16:05 by mmitkovi          #+#    #+#             */
-/*   Updated: 2026/03/21 17:33:24 by mmitkovi         ###   ########.fr       */
+/*   Updated: 2026/03/23 17:36:17 by mmitkovi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <vector>
-#include <deque>
 #include <iostream>
 #include <cctype>
-#include <ctime>
 #include <iomanip>
 #include <cstdlib>
-#include <sys/time.h>
 #include <time.h>
+#include <vector>
+#include <deque>
 #include "PmergeMe.hpp"
 
 void sub_timespec(struct timespec& s, struct timespec& e, double& d)
 {
 	d  = (e.tv_sec - s.tv_sec) * 1e9;
 	d = d + (e.tv_nsec - s.tv_nsec);
+}
+
+void printBefore(const std::vector<int>& in)
+{
+	std::cout << "Before: ";
+	for (size_t i = 0; i < in.size(); ++i)
+		std::cout << in[i] << " ";
+	std::cout << std::endl;
+}
+
+void printAfter(const std::vector<int>& out)
+{
+	std::cout << "After: ";
+	for (size_t i = 0; i < out.size(); ++i)
+		std::cout << out[i] << " ";
+	std::cout << std::endl;
 }
 
 int main(int ac, char **av)
@@ -37,6 +51,8 @@ int main(int ac, char **av)
 	std::string input;
 	std::vector<int> inputV;
 	std::deque<int> inputD;
+
+	// Check
 	for (int i = 1; i < ac; ++i)
 	{
 		input = av[i];
@@ -53,12 +69,10 @@ int main(int ac, char **av)
 		inputD.push_back(num);
 	}
 	std::cout << std::endl;
-	
-	std::cout << "Before: ";
-	for (size_t i = 0; i < inputD.size(); ++i)
-		std::cout << inputD[i] << " ";
-	std::cout << std::endl;
 
+	// TODO: duplicates allowed?
+	
+	printBefore(inputV);
 	// template <typename Container, typename PairContainer>
 	PmergeMe<std::vector<int>, std::vector<pair> > v;
 	PmergeMe<std::deque<int>, std::deque<pair> > d;
@@ -70,24 +84,19 @@ int main(int ac, char **av)
 		std::cerr << "Clock_gettime" << std::endl;
 		return 1;
 	}
-	// ALGO START
+	// ALGO Vector Start
 	std::vector<int> outputV = v.fordJohnson(inputV);
 	// --- END
-	
-	clock_gettime(CLOCK_REALTIME, &endV);
+	if (clock_gettime(CLOCK_REALTIME, &endV) == -1)
+	{
+		std::cerr << "Clock_gettime" << std::endl;
+		return 1;
+	}
 	double nanoV;
 	sub_timespec(startV, endV, nanoV);
 
-
-	// Print the output
-	std::cout << "After std::vector<int>: ";
-	for (size_t i = 0; i < outputV.size(); ++i)
-		std::cout << outputV[i] << " ";
-	std::cout << std::endl;
-
-	//struct timeval startD,endD;
-	//gettimeofday(&startD, NULL);
-
+//	PRINT After
+	printAfter(outputV);
 	struct timespec startD, endD;
 	if (clock_gettime(CLOCK_REALTIME, &startD) == -1)
 	{
@@ -96,20 +105,18 @@ int main(int ac, char **av)
 	}
 	// ALGO Deque Start
 	std::deque<int> outputD = d.fordJohnson(inputD);
-
-	clock_gettime(CLOCK_REALTIME, &endD);
+	// --- END
+	if (clock_gettime(CLOCK_REALTIME, &endD) == -1)
+	{
+		std::cerr << "Clock_gettime" << std::endl;
+		return 1;
+	}
 	double nanoD;
 	sub_timespec(startD, endD, nanoD);
-
-	// Print the output
-	std::cout << "After std::deque<int>: ";
-	for (size_t i = 0; i < outputD.size(); ++i)
-		std::cout << outputD[i] << " ";
-	std::cout << std::endl;
-	
-	std::cout << std::fixed << std::setprecision(5) <<"Time to process a range of __ elements with std::vector<int> : " 
+	int num_elem = --ac;
+	std::cout << std::setprecision(5) <<"Time to process a range of " << num_elem << " elements with std::vector<int> : " 
 			<< nanoV/1000 << " μs" << std::endl;
-	std::cout << "Time to process a range of __ elements with std::deque<int> : " 
+	std::cout << "Time to process a range of " << num_elem << " elements with std::deque<int> : " 
 			<< nanoD/1000 << std::setprecision(5) << " μs" << std::endl;
 
 
