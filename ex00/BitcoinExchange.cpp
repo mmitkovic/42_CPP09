@@ -232,3 +232,8 @@ void BitcoinExchange::calculate(const char * inputPath) {
 		}
 	}
 }
+
+
+// 3/3/2026 <----
+// --------------------4/3/2026
+// 5/3/2026

@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <ctime>
 #include <iostream>
 #include <cctype>
 #include <iomanip>
@@ -20,10 +21,34 @@
 #include <limits.h>
 #include "PmergeMe.hpp"
 
-void sub_timespec(struct timespec& s, struct timespec& e, double& d)
+struct timespec time_start()
 {
+	struct timespec start;
+	if (clock_gettime(CLOCK_REALTIME, &start) == -1)
+	{
+		std::cerr << "Clock_gettime" << std::endl;
+		exit(1);
+	}
+	return start;
+}
+
+struct timespec end_time()
+{
+	struct timespec end;
+	if (clock_gettime(CLOCK_REALTIME, &end) == -1)
+	{
+		std::cerr << "Clock_gettime" << std::endl;
+		exit(1);
+	}
+	return end;
+}
+
+double sub_timespec(struct timespec& s, struct timespec& e)
+{
+	double d;
 	d  = (e.tv_sec - s.tv_sec) * 1e9;
 	d = d + (e.tv_nsec - s.tv_nsec);
+	return d;
 }
 
 void printBefore(const std::vector<int>& in)
@@ -73,61 +98,44 @@ int main(int ac, char **av)
 	}
 	std::vector<int> inputV;
 	std::deque<int> inputD;
-
+	
 	// TIME Start Vector
-	struct timespec startV, endV;
-	if (clock_gettime(CLOCK_REALTIME, &startV) == -1)
-	{
-		std::cerr << "Clock_gettime" << std::endl;
-		return 1;
-	}
-	// TIME Start Deque
-	struct timespec startD, endD;
-	if (clock_gettime(CLOCK_REALTIME, &startD) == -1)
-	{
-		std::cerr << "Clock_gettime" << std::endl;
-		return 1;
-	}
-
+	struct timespec parseStart = time_start();
 	// Check input
 	if (!isValidInput(ac, av, inputV, inputD))
 	{
 		std::cerr << "Error" << std::endl;
 		return 1;
 	}
-	
+	struct timespec parseEnd = end_time();
+	double parseTime = sub_timespec(parseStart, parseEnd);
+	std::cout << std::setprecision(5) << "Parse time: " << parseTime/1000 << std::endl;
+
 	printBefore(inputV);
 	PmergeMe v;
 	PmergeMe d;
 
+
+	struct timespec startV = time_start();
 	// ALGO Vector Start
 	std::vector<int> outputV = v.fordJohnson(inputV);
 	// --- END
-	//
-	if (clock_gettime(CLOCK_REALTIME, &endV) == -1)
-	{
-		std::cerr << "Clock_gettime" << std::endl;
-		return 1;
-	}
-	double nanoV;
-	sub_timespec(startV, endV, nanoV);
+	struct timespec endV = end_time();
+	double nanoV = sub_timespec(startV, endV);
 
+
+	struct timespec startD = time_start();
 	// ALGO Deque Start
 	std::deque<int> outputD = d.fordJohnson(inputD);
 	// --- END
-	if (clock_gettime(CLOCK_REALTIME, &endD) == -1)
-	{
-		std::cerr << "Clock_gettime" << std::endl;
-		return 1;
-	}
-	double nanoD;
-	sub_timespec(startD, endD, nanoD);
+	struct timespec endD = end_time();
+	double nanoD = sub_timespec(startD, endD);
 
 	printAfter(outputV);
 	int num_elem = --ac;
 	std::cout << std::setprecision(5) <<"Time to process a range of " << num_elem << " elements with std::vector<int> : " 
-			<< nanoV/1000 << " μs" << std::endl;
+			<< (nanoV+parseTime)/1000 << " μs" << std::endl;
 	std::cout << "Time to process a range of " << num_elem << " elements with std::deque<int> : " 
-			<< nanoD/1000 << std::setprecision(5) << " μs" << std::endl;
+			<< (nanoD+parseTime)/1000 << std::setprecision(5) << " μs" << std::endl;
 	return 0;
 }
